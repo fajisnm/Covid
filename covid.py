@@ -1,4 +1,29 @@
- country_data = covid.get_status_by_country_name(country)
+# corona virus stats for catuserbot
+from covid import Covid
+
+from . import catub, covidindia, edit_delete, edit_or_reply
+
+plugin_category = "extra"
+
+
+@catub.cat_cmd(
+    pattern="covid(?:\s|$)([\s\S]*)",
+    command=("covid", plugin_category),
+    info={
+        "header": "To get latest information about covid-19.",
+        "description": "Get information about covid-19 data in the given country/state(only Indian States).",
+        "usage": "{tr}covid <state_name/country_name>",
+        "examples": ["{tr}covid andhra pradesh", "{tr}covid india", "{tr}covid world"],
+    },
+)
+async def corona(event):
+    "To get latest information about covid-19."
+    input_str = event.pattern_match.group(1)
+    country = (input_str).title() if input_str else "World"
+    catevent = await edit_or_reply(event, "`Collecting data...`")
+    covid = Covid(source="worldometers")
+    try:
+        country_data = covid.get_status_by_country_name(country)
     except ValueError:
         country_data = ""
     if country_data:
@@ -32,3 +57,11 @@
                 \n😟 New Deaths : <code>{cat2}</code>\
                 \n😃 New cured  : <code>{cat3}</code> </b>"
             await catevent.edit(result, parse_mode="html")
+        else:
+            await edit_delete(
+                catevent,
+                "`Corona Virus Info of {} is not avaiable or unable to fetch`".format(
+                    country
+                ),
+                5,
+            )
