@@ -1,11 +1,4 @@
-async def corona(event):
-    "To get latest information about covid-19."
-    input_str = event.pattern_match.group(1)
-    country = (input_str).title() if input_str else "World"
-    catevent = await edit_or_reply(event, "`Collecting data...`")
-    covid = Covid(source="worldometers")
-    try:
-        country_data = covid.get_status_by_country_name(country)
+ country_data = covid.get_status_by_country_name(country)
     except ValueError:
         country_data = ""
     if country_data:
